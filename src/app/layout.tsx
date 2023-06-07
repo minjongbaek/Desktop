@@ -1,6 +1,7 @@
 import Image from "next/image";
 import "./globals.css";
 import wallpaperSrc from "@public/images/wallpaper/ventura.jpg";
+import MenuBar from "@/components/MenuBar/MenuBar";
 
 export const metadata = {
   title: "Desktop.minjong",
@@ -25,7 +26,10 @@ export default function RootLayout({
             placeholder="blur"
           />
         </div>
-        <div className="relative w-full h-full">{children}</div>
+        <div className="relative w-full h-full">
+          <MenuBar />
+          {children}
+        </div>
       </body>
     </html>
   );
