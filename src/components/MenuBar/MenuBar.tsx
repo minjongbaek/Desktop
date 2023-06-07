@@ -1,6 +1,6 @@
 import AppleIcon from "@icons/menu/apple.svg?react";
 import ControlCenterIcon from "@icons/menu/control-center.svg?react";
-
+import Clock from "./Clock";
 import { PropsWithChildren } from "react";
 
 const MenuBar = () => {
@@ -18,7 +18,9 @@ const MenuBar = () => {
         <Menu>
           <ControlCenterIcon width={16} />
         </Menu>
-        <Menu>Date</Menu>
+        <Menu>
+          <Clock />
+        </Menu>
       </div>
     </div>
   );
