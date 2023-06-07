@@ -2,6 +2,7 @@ import Image from "next/image";
 import "./globals.css";
 import wallpaperSrc from "@public/images/wallpaper/ventura.jpg";
 import MenuBar from "@/components/MenuBar/MenuBar";
+import Dock from "@/components/Dock/Dock";
 
 export const metadata = {
   title: "Desktop.minjong",
@@ -29,6 +30,7 @@ export default function RootLayout({
         <div className="relative w-full h-full">
           <MenuBar />
           {children}
+          <Dock />
         </div>
       </body>
     </html>
