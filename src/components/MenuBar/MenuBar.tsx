@@ -1,5 +1,5 @@
-import AppleIcon from "@icons/menu/apple.svg?react";
-import ControlCenterIcon from "@icons/menu/control-center.svg?react";
+import AppleIcon from "@public/icons/menu/apple.svg?react";
+import ControlCenterIcon from "@public/icons/menu/control-center.svg?react";
 import Clock from "./Clock";
 import { PropsWithChildren } from "react";
 
