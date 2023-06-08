@@ -4,21 +4,22 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import { RefObject, useRef, useState } from "react";
 
+const DEFAULT_SIZE = 64;
+const MAGNIFICATION_MAX = 1.8;
+
 const useCalculateSize = (
   element: RefObject<HTMLDivElement>,
-  mouseX: number | null,
-  size: number,
-  magnificationMax: number
+  mouseX: number | null
 ) => {
   const magnification = useMotionValue(0);
 
   const transformedMagnification = useTransform(
     magnification,
     [0, 1],
-    [1, magnificationMax]
+    [1, MAGNIFICATION_MAX]
   );
 
-  const calculateSize = useSpring(size, {
+  const calculateSize = useSpring(DEFAULT_SIZE, {
     mass: 0.5,
   });
 
@@ -26,7 +27,7 @@ const useCalculateSize = (
 
   if (element.current !== null) {
     if (mouseX === null) {
-      calculateSize.set(size);
+      calculateSize.set(DEFAULT_SIZE);
     } else {
       const rect = element.current.getBoundingClientRect();
       const center = rect.left + rect.width / 2;
@@ -37,7 +38,7 @@ const useCalculateSize = (
       } else {
         magnification.set(0);
       }
-      calculateSize.set(size * transformedMagnification.get());
+      calculateSize.set(DEFAULT_SIZE * transformedMagnification.get());
     }
   }
   return calculateSize;
@@ -46,25 +47,13 @@ const useCalculateSize = (
 interface DockItemProps {
   appName: "finder" | "chrome";
   mouseX: number | null;
-  defaultSize: number;
-  magnificationMax: number;
 }
 
-const DockItem = ({
-  appName,
-  mouseX,
-  defaultSize,
-  magnificationMax,
-}: DockItemProps) => {
+const DockItem = ({ appName, mouseX }: DockItemProps) => {
   const [active, _] = useState(true);
   const imageWrapRef = useRef<HTMLDivElement>(null);
 
-  const calculateSize = useCalculateSize(
-    imageWrapRef,
-    mouseX,
-    defaultSize,
-    magnificationMax
-  );
+  const calculateSize = useCalculateSize(imageWrapRef, mouseX);
 
   return (
     <li className="group p-0.5 pb-1.5 flex flex-col items-center">
