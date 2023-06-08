@@ -27,7 +27,7 @@ export default function RootLayout({
             placeholder="blur"
           />
         </div>
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full flex flex-col">
           <MenuBar />
           {children}
           <Dock />
