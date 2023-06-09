@@ -1,8 +1,9 @@
 "use client";
 
+import { AppData } from "@/types/app";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { RefObject, useRef, useState } from "react";
+import { ComponentProps, RefObject, useRef } from "react";
 
 const DEFAULT_SIZE = 64;
 const MAGNIFICATION_MAX = 1.8;
@@ -45,20 +46,26 @@ const useCalculateSize = (
 };
 
 interface DockItemProps {
-  appName: "finder" | "chrome";
   mouseX: number | null;
 }
 
-const DockItem = ({ appName, mouseX }: DockItemProps) => {
-  const [active, _] = useState(true);
+const DockItem = ({
+  name,
+  iconUrl,
+  active,
+  mouseX,
+  onClick,
+}: AppData & DockItemProps & Pick<ComponentProps<"li">, "onClick">) => {
   const imageWrapRef = useRef<HTMLDivElement>(null);
-
   const calculateSize = useCalculateSize(imageWrapRef, mouseX);
 
   return (
-    <li className="group p-0.5 pb-1.5 flex flex-col items-center">
-      <div className="group-hover:block hidden absolute mt-[-2.5rem] px-4 py-0.5 text-sm bg-lightgrey/90 rounded shadow-2xl after:content-[''] after:border-t-[0.5rem] after:border-x-[0.5rem] after:border-transparent after:border-t-lightgrey/90 after:absolute after:bottom-[-0.5rem] after:left-[50%] after:translate-x-[-50%] after:h-0">
-        {appName}
+    <li
+      className="group p-0.5 pb-1.5 flex flex-col items-center"
+      onClick={onClick}
+    >
+      <div className="group-hover:block hidden absolute w-max mt-[-2.5rem] px-4 py-0.5 text-sm bg-lightgrey/90 rounded shadow-2xl after:content-[''] after:border-t-[0.5rem] after:border-x-[0.5rem] after:border-transparent after:border-t-lightgrey/90 after:absolute after:bottom-[-0.5rem] after:left-[50%] after:translate-x-[-50%] after:h-0">
+        {name}
       </div>
       <motion.div
         ref={imageWrapRef}
@@ -69,8 +76,8 @@ const DockItem = ({ appName, mouseX }: DockItemProps) => {
         }}
       >
         <Image
-          src={`/icons/app/${appName}.png`}
-          alt="chrome"
+          src={iconUrl}
+          alt={name}
           fill
           sizes="128px"
           quality={75}
