@@ -1,13 +1,14 @@
 "use client";
 
-import Window from "@/components/Window/Window";
+import { appsState } from "@/stores/app";
+import { useRecoilValue } from "recoil";
 
 export default function Home() {
+  const apps = useRecoilValue(appsState);
+
   return (
     <main className="relative w-full h-full flex flex-col justify-center items-center">
-      <Window>
-        <Window.Header>asd</Window.Header>
-      </Window>
+      {apps.map(({ active, content }) => (active ? content : null))}
     </main>
   );
 }

@@ -1,12 +1,23 @@
 "use client";
 
+import { useRecoilState, useRecoilValue } from "recoil";
 import DockItem from "./DockItem";
 import { useState } from "react";
-
-const APPS = ["finder", "chrome"] as const;
+import { appsState } from "@/stores/app";
+import { AppData } from "@/types/app";
 
 const Dock = () => {
   const [mouseX, setMouseX] = useState<number | null>(null);
+  const [apps, setApps] = useRecoilState(appsState);
+
+  const handleClickDockItem = (id: AppData["id"]) => {
+    setApps(
+      apps.map((app) => {
+        if (app.id === id) return { ...app, active: !app.active };
+        return app;
+      })
+    );
+  };
 
   return (
     <footer className="fixed inset-x-0 bottom-0 w-full z-50">
@@ -16,11 +27,12 @@ const Dock = () => {
           onMouseMove={(event) => setMouseX(event.clientX)}
           onMouseLeave={() => setMouseX(null)}
         >
-          {APPS.map((appName) => (
+          {apps.map((app) => (
             <DockItem
-              key={`dock-item-${appName}`}
-              appName={appName}
+              key={app.id}
+              {...app}
               mouseX={mouseX}
+              onClick={() => handleClickDockItem(app.id)}
             />
           ))}
         </ul>
