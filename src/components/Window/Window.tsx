@@ -52,18 +52,18 @@ const Window = ({ children }: PropsWithChildren) => {
         })
       }
       onDragStop={(_event, { x, y }) => setSize({ ...size, x, y })}
+      style={{
+        display: "flex",
+      }}
       dragHandleClassName="header"
-      className="relative rounded-lg bg-lightgrey/95"
+      className="relative rounded-lg flex-col"
     >
       {children}
     </Rnd>
   );
 };
 
-const WindowHeader = ({
-  id,
-  children,
-}: Pick<AppData, "id"> & PropsWithChildren) => {
+const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
   const [app, setApp] = useRecoilState(appAtomFamily(id));
 
   const handleClickRedButton = () => {
@@ -73,8 +73,8 @@ const WindowHeader = ({
   const handleClickGreenButton = () => {};
 
   return (
-    <div className="header flex px-4 py-1">
-      <div className="flex items-center gap-1.5">
+    <div className="header flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg">
+      <div className="absolute left-0 flex items-center gap-1.5 px-4 py-1">
         <button
           className="w-3 h-3 bg-red-400 border border-red-500 rounded-full"
           onClick={handleClickRedButton}
@@ -85,9 +85,20 @@ const WindowHeader = ({
           onClick={handleClickGreenButton}
         />
       </div>
+      <h1 className="self-center">{app.name}</h1>
+    </div>
+  );
+};
+
+const Body = ({ children }: PropsWithChildren) => {
+  return (
+    <div className="w-full h-full px-2 py-0.5 bg-white/95 rounded-b-lg">
       {children}
     </div>
   );
 };
+
+Window.Header = Header;
+Window.Body = Body;
 
 export default Window;
