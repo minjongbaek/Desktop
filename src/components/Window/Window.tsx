@@ -1,13 +1,17 @@
 "use client";
 
+import { appAtomFamily } from "@/stores/app";
+import { AppData } from "@/types/app";
 import { PropsWithChildren, useState } from "react";
 import { Rnd } from "react-rnd";
+import { useRecoilState } from "recoil";
 
 type WindowState = {
   width: number;
   height: number;
   x: number;
   y: number;
+  isMax: boolean;
 };
 
 const Window = ({ children }: PropsWithChildren) => {
@@ -16,10 +20,12 @@ const Window = ({ children }: PropsWithChildren) => {
     height: 600,
     x: 200,
     y: 100,
+    isMax: false,
   });
 
   return (
     <Rnd
+      bounds="parent"
       handle=".cursor"
       minWidth={600}
       minHeight={400}
@@ -49,16 +55,39 @@ const Window = ({ children }: PropsWithChildren) => {
       dragHandleClassName="header"
       className="relative rounded-lg bg-lightgrey/95"
     >
-      <Header />
       {children}
     </Rnd>
   );
 };
 
-const Header = ({ children }: PropsWithChildren) => {
-  return <div className="header px-2 py-1">{children}</div>;
-};
+const WindowHeader = ({
+  id,
+  children,
+}: Pick<AppData, "id"> & PropsWithChildren) => {
+  const [app, setApp] = useRecoilState(appAtomFamily(id));
 
-Window.Header = Header;
+  const handleClickRedButton = () => {
+    setApp({ ...app, active: !app.active });
+  };
+
+  const handleClickGreenButton = () => {};
+
+  return (
+    <div className="header flex px-4 py-1">
+      <div className="flex items-center gap-1.5">
+        <button
+          className="w-3 h-3 bg-red-400 border border-red-500 rounded-full"
+          onClick={handleClickRedButton}
+        />
+        <button className="w-3 h-3 bg-yellow-400 border border-yellow-500 rounded-full" />
+        <button
+          className="w-3 h-3 bg-green-400 border border-green-500 rounded-full"
+          onClick={handleClickGreenButton}
+        />
+      </div>
+      {children}
+    </div>
+  );
+};
 
 export default Window;

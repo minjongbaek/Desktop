@@ -1,31 +1,43 @@
 import Window from "@/components/Window/Window";
 import { AppData } from "@/types/app";
-import { atom } from "recoil";
+import { atom, atomFamily } from "recoil";
 
-export const appsState = atom<AppData[]>({
-  key: "apps",
-  default: [
-    {
-      id: "finder",
-      name: "Finder",
-      iconUrl: "/icons/app/finder.png",
-      active: false,
-      content: (
-        <Window>
-          <Window.Header>Finder</Window.Header>
-        </Window>
-      ),
-    },
-    {
-      id: "chrome",
-      name: "Google Chrome",
-      iconUrl: "/icons/app/chrome.png",
-      active: false,
-      content: (
-        <Window>
-          <Window.Header>Chrome</Window.Header>
-        </Window>
-      ),
-    },
-  ],
+const getName = (appId: AppData["id"]) => {
+  switch (appId) {
+    case "finder":
+      return "Finder";
+    case "chrome":
+      return "Google Chrome";
+    default:
+      console.error(`${appId}는 올바르지 않은 appId 에요.`);
+      return "";
+  }
+};
+
+const getContent = (appId: AppData["id"]) => {
+  switch (appId) {
+    case "finder":
+      return <Window />;
+    case "chrome":
+      return <Window />;
+    default:
+      console.error(`${appId}는 올바르지 않은 appId 에요.`);
+      return <></>;
+  }
+};
+
+export const appAtomFamily = atomFamily<AppData, AppData["id"]>({
+  key: "appAtomFamily",
+  default: (id) => ({
+    id,
+    name: getName(id),
+    iconUrl: `/icons/app/${id}.png`,
+    active: false,
+    content: getContent(id),
+  }),
+});
+
+export const appIdsAtom = atom<AppData["id"][]>({
+  key: "appIdsAtom",
+  default: ["finder", "chrome"],
 });
