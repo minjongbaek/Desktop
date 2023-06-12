@@ -31,7 +31,7 @@ const Window = ({ children }: PropsWithChildren) => {
 
   return (
     <Rnd
-      bounds="parent"
+      bounds=".main"
       handle=".cursor"
       minWidth={600}
       minHeight={400}
@@ -68,6 +68,8 @@ const Window = ({ children }: PropsWithChildren) => {
       enableResizing={!isMaxSize}
       style={{
         display: "flex",
+        transitionProperty: "transform, width, height",
+        transitionDuration: "0.3s, 0.1s, 0.1s",
       }}
       dragHandleClassName="header"
       className="rounded-lg flex-col z-60"
