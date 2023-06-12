@@ -1,7 +1,8 @@
 export interface AppData {
-  id: "finder" | "chrome";
+  id: "chrome";
   name: string;
   iconUrl: string;
   content: JSX.Element;
   active: boolean;
+  isMaxSize: boolean;
 }

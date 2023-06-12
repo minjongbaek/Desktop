@@ -2,16 +2,21 @@
 
 import { appAtomFamily } from "@/stores/app";
 import { AppData } from "@/types/app";
-import { PropsWithChildren, useState } from "react";
+import {
+  MouseEvent,
+  MouseEventHandler,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
 import { Rnd } from "react-rnd";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 type WindowState = {
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
   x: number;
   y: number;
-  isMax: boolean;
 };
 
 const Window = ({ children }: PropsWithChildren) => {
@@ -20,8 +25,9 @@ const Window = ({ children }: PropsWithChildren) => {
     height: 600,
     x: 200,
     y: 100,
-    isMax: false,
   });
+
+  const { isMaxSize } = useRecoilValue(appAtomFamily("chrome"));
 
   return (
     <Rnd
@@ -30,12 +36,12 @@ const Window = ({ children }: PropsWithChildren) => {
       minWidth={600}
       minHeight={400}
       size={{
-        width: size.width,
-        height: size.height,
+        width: isMaxSize ? "100%" : size.width,
+        height: isMaxSize ? "100%" : size.height,
       }}
       position={{
-        x: size.x,
-        y: size.y,
+        x: isMaxSize ? 0 : size.x,
+        y: isMaxSize ? 0 : size.y,
       }}
       onResizeStop={(
         _event,
@@ -43,20 +49,28 @@ const Window = ({ children }: PropsWithChildren) => {
         { style: { width, height } },
         _delta,
         position
-      ) =>
-        setSize({
-          ...size,
-          width: Number(width),
-          height: Number(height),
-          ...position,
-        })
-      }
-      onDragStop={(_event, { x, y }) => setSize({ ...size, x, y })}
+      ) => {
+        if (!isMaxSize) {
+          setSize({
+            ...size,
+            width: width,
+            height: height,
+            ...position,
+          });
+        }
+      }}
+      onDragStop={(_event, { x, y }) => {
+        if (!isMaxSize) {
+          setSize({ ...size, x, y });
+        }
+      }}
+      disableDragging={isMaxSize}
+      enableResizing={!isMaxSize}
       style={{
         display: "flex",
       }}
       dragHandleClassName="header"
-      className="relative rounded-lg flex-col"
+      className="rounded-lg flex-col z-60"
     >
       {children}
     </Rnd>
@@ -66,14 +80,21 @@ const Window = ({ children }: PropsWithChildren) => {
 const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
   const [app, setApp] = useRecoilState(appAtomFamily(id));
 
-  const handleClickRedButton = () => {
+  const handleClickRedButton = (event: MouseEvent<HTMLButtonElement>) => {
     setApp({ ...app, active: !app.active });
+    event.preventDefault();
   };
 
-  const handleClickGreenButton = () => {};
+  const handleClickGreenButton = (event: MouseEvent<HTMLElement>) => {
+    setApp({ ...app, isMaxSize: !app.isMaxSize });
+    event.preventDefault();
+  };
 
   return (
-    <div className="header flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg">
+    <div
+      className="header flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg"
+      onDoubleClick={handleClickGreenButton}
+    >
       <div className="absolute left-0 flex items-center gap-1.5 px-4 py-1">
         <button
           className="w-3 h-3 bg-red-400 border border-red-500 rounded-full"
@@ -92,7 +113,7 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
 
 const Body = ({ children }: PropsWithChildren) => {
   return (
-    <div className="w-full h-full px-2 py-0.5 bg-white/95 rounded-b-lg">
+    <div className="w-full h-full px-2 py-0.5 bg-white rounded-b-lg">
       {children}
     </div>
   );
