@@ -8,7 +8,10 @@ export default function Home() {
   const appIds = useRecoilValue(appIdsAtom);
 
   return (
-    <main className="main relative w-full h-full flex flex-col justify-center items-center">
+    <main
+      id="main"
+      className="relative w-full h-full flex flex-col justify-center items-center"
+    >
       {appIds.map((id) => (
         <AppWindow key={id} id={id} />
       ))}
