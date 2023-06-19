@@ -35,7 +35,6 @@ const Window = ({ children }: PropsWithChildren) => {
   };
 
   const handleMouseDown = (event: React.MouseEvent, direction: string) => {
-    console.log(event);
     if (event.button !== 0) return;
     if (!(event.target instanceof HTMLElement)) return;
 
@@ -51,27 +50,47 @@ const Window = ({ children }: PropsWithChildren) => {
     const handleMouseMove = (event: MouseEvent) => {
       switch (direction) {
         case "top": {
-          const top = `${event.clientY - mainElement.offsetTop}px`;
-          const height = `${windowRect.bottom - event.clientY}px`;
-          windowElement.style.top = top;
+          const isOverMainElement = event.clientY < mainElement.offsetTop;
+          const top = isOverMainElement
+            ? "0px"
+            : `${event.clientY - mainElement.offsetTop}px`;
+          const height = isOverMainElement
+            ? `${windowRect.bottom - mainElement.offsetTop}px`
+            : `${windowRect.bottom - event.clientY}px`;
+
           windowElement.style.height = height;
+          windowElement.style.top = top;
           break;
         }
         case "right": {
+          const isOverMainElement = event.clientX > mainElement.offsetWidth;
           const rightMargin = event.clientX - windowRect.right;
-          const width = `${windowRect.width + rightMargin}px`;
+          const width = isOverMainElement
+            ? `${mainElement.offsetWidth - windowRect.left}px`
+            : `${windowRect.width + rightMargin}px`;
+
           windowElement.style.width = width;
           break;
         }
         case "bottom": {
+          const mainElementHeight =
+            mainElement.offsetTop + mainElement.offsetHeight;
+          const isOverMainElement = event.clientY > mainElementHeight;
           const bottomMargin = event.clientY - windowRect.bottom;
-          const height = `${windowRect.height + bottomMargin}px`;
+          const height = isOverMainElement
+            ? `${mainElementHeight - windowRect.top}px`
+            : `${windowRect.height + bottomMargin}px`;
+
           windowElement.style.height = height;
           break;
         }
         case "left": {
-          const left = `${event.clientX}px`;
-          const width = `${windowRect.right - event.clientX}px`;
+          const isOverMainElement = event.clientX < mainElement.offsetLeft;
+          const left = isOverMainElement ? "0px" : `${event.clientX}px`;
+          const width = isOverMainElement
+            ? `${windowRect.right - mainElement.offsetLeft}px`
+            : `${windowRect.right - event.clientX}px`;
+
           windowElement.style.left = left;
           windowElement.style.width = width;
           break;
@@ -84,61 +103,21 @@ const Window = ({ children }: PropsWithChildren) => {
 
     const handleMouseUp = (event: MouseEvent) => {
       windowElement.style.transitionDuration = "";
-      mainElement.removeEventListener("mousemove", handleMouseMove);
-      mainElement.removeEventListener("mouseup", handleMouseUp);
+      setSize({
+        width: windowElement.offsetWidth,
+        height: windowElement.offsetHeight,
+        x: windowElement.offsetLeft,
+        y: windowElement.offsetTop,
+      });
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
-    mainElement.addEventListener("mousemove", handleMouseMove);
-    mainElement.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
-    // <Rnd
-    //   bounds=".main"
-    //   handle=".cursor"
-    //   minWidth={600}
-    //   minHeight={400}
-    //   size={{
-    //     width: isMaxSize ? "100%" : size.width,
-    //     height: isMaxSize ? "100%" : size.height,
-    //   }}
-    //   position={{
-    //     x: isMaxSize ? 0 : size.x,
-    //     y: isMaxSize ? 0 : size.y,
-    //   }}
-    //   onResizeStop={(
-    //     _event,
-    //     _direction,
-    //     { style: { width, height } },
-    //     _delta,
-    //     position
-    //   ) => {
-    //     if (!isMaxSize) {
-    //       setSize({
-    //         ...size,
-    //         width: width,
-    //         height: height,
-    //         ...position,
-    //       });
-    //     }
-    //   }}
-    //   onDragStop={(_event, { x, y }) => {
-    //     if (!isMaxSize) {
-    //       setSize({ ...size, x, y });
-    //     }
-    //   }}
-    //   disableDragging={isMaxSize}
-    //   enableResizing={!isMaxSize}
-    //   style={{
-    //     display: "flex",
-    //     transitionProperty: "transform, width, height",
-    //     transitionDuration: "0.3s, 0.1s, 0.1s",
-    //   }}
-    //   dragHandleClassName="header"
-    //   className="rounded-lg flex-col z-60"
-    // >
-    //   {children}
-    // </Rnd>
     <div
       className="absolute flex rounded-lg flex-col z-60 transition-[width,height,top,left]"
       ref={windowRef}
