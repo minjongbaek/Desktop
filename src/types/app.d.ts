@@ -5,4 +5,12 @@ export interface AppData {
   content: JSX.Element;
   active: boolean;
   isMaxSize: boolean;
+  size: {
+    width: number;
+    height: number;
+  };
+  position: {
+    x: number;
+    y: number;
+  };
 }
