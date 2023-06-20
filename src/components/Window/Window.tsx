@@ -179,10 +179,6 @@ const Window = ({ children }: PropsWithChildren) => {
         className="absolute -left-1 w-2 h-full cursor-ew-resize z-20 select-none"
         onMouseDown={(event) => handleMouseDown(event, "left")}
       />
-      <div>
-        {JSON.stringify(app.position)}, {JSON.stringify(app.size)},{" "}
-        {JSON.stringify(app.isMaxSize)}
-      </div>
       {children}
     </div>
   );
