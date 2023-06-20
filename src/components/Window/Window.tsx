@@ -20,8 +20,6 @@ const Window = ({ children }: PropsWithChildren) => {
     top: isMaxSize ? "0px" : position.y,
   };
 
-  console.log(position);
-
   const handleMouseDown = (event: React.MouseEvent, direction: string) => {
     if (event.button !== 0) return;
     if (!(event.target instanceof HTMLElement)) return;
@@ -33,7 +31,9 @@ const Window = ({ children }: PropsWithChildren) => {
     if (!windowElement) return;
 
     const windowRect = windowElement.getBoundingClientRect();
-    windowElement.style.transitionDuration = "0s";
+
+    windowElement.style.transitionProperty = "";
+    windowElement.style.transitionDuration = "";
 
     const handleMouseMove = (event: MouseEvent) => {
       const moveTop = () => {
@@ -127,7 +127,6 @@ const Window = ({ children }: PropsWithChildren) => {
     const handleMouseUp = (event: MouseEvent) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      windowElement.style.transitionDuration = "";
       const size = {
         width: windowElement.offsetWidth,
         height: windowElement.offsetHeight,
@@ -136,7 +135,7 @@ const Window = ({ children }: PropsWithChildren) => {
         x: windowElement.offsetLeft,
         y: windowElement.offsetTop,
       };
-      setApp({ ...app, ...size, ...position });
+      setApp({ ...app, size, position });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -145,7 +144,7 @@ const Window = ({ children }: PropsWithChildren) => {
 
   return (
     <div
-      className="window absolute flex rounded-lg flex-col z-10 transition-[width,height,top,left]"
+      className="window absolute flex rounded-lg flex-col z-10"
       style={{ ...sizeStyle, ...positionStyle }}
     >
       <div
@@ -180,6 +179,10 @@ const Window = ({ children }: PropsWithChildren) => {
         className="absolute -left-1 w-2 h-full cursor-ew-resize z-20 select-none"
         onMouseDown={(event) => handleMouseDown(event, "left")}
       />
+      <div>
+        {JSON.stringify(app.position)}, {JSON.stringify(app.size)},{" "}
+        {JSON.stringify(app.isMaxSize)}
+      </div>
       {children}
     </div>
   );
@@ -194,7 +197,18 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
   };
 
   const handleClickGreenButton = (event: React.MouseEvent<HTMLElement>) => {
+    if (!(event.target instanceof HTMLElement)) return;
+    const headerElement = event.target;
+
+    const windowElement = headerElement.closest(".window");
+    if (!(windowElement instanceof HTMLElement)) return;
+
+    windowElement.style.transitionProperty = "top,left,width,height";
+    windowElement.style.transitionDuration = "150ms";
+
     setApp({ ...app, isMaxSize: !app.isMaxSize });
+
+    windowElement.style.transform = "";
     event.preventDefault();
   };
 
@@ -210,7 +224,8 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
     const mainElement = document.getElementById("main");
     if (!mainElement) return;
 
-    windowElement.style.transitionDuration = "0s";
+    windowElement.style.transitionDuration = "";
+    windowElement.style.transitionProperty = "";
 
     let marginTop = 0;
     let marginLeft = 0;
@@ -224,11 +239,42 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
 
-      const position = {
-        x: windowElement.offsetLeft + marginLeft,
-        y: windowElement.offsetTop + marginTop,
-      };
-      setApp({ ...app, position: { ...position } });
+      if (downEvent.detail === 2) {
+        windowElement.style.transitionProperty = "top,left,width,height";
+        windowElement.style.transitionDuration = "150ms";
+        setApp({ ...app, isMaxSize: !app.isMaxSize });
+        downEvent.preventDefault();
+        windowElement.style.transform = "";
+        return;
+      }
+
+      if (app.isMaxSize) {
+        // TODO: 리팩터링
+        marginTop = event.clientY - downEvent.clientY;
+        marginLeft = event.clientX - downEvent.clientX;
+        if (
+          windowElement.offsetWidth !== mainElement.offsetWidth ||
+          windowElement.offsetHeight !== mainElement.offsetHeight ||
+          marginLeft !== windowElement.offsetLeft ||
+          marginTop !== windowElement.offsetTop
+        ) {
+          const size = {
+            width: windowElement.offsetWidth,
+            height: windowElement.offsetHeight,
+          };
+          const position = {
+            x: marginLeft,
+            y: marginTop,
+          };
+          setApp({ ...app, size, position, isMaxSize: false });
+        }
+      } else {
+        const position = {
+          x: windowElement.offsetLeft + marginLeft,
+          y: windowElement.offsetTop + marginTop,
+        };
+        setApp({ ...app, position });
+      }
       windowElement.style.transform = "";
     };
 
@@ -239,7 +285,6 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
   return (
     <div
       className="relative header flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg select-none z-10"
-      onDoubleClick={handleClickGreenButton}
       onMouseDown={handleMouseDown}
     >
       <div className="absolute left-0 flex items-center gap-1.5 px-4 py-1">
