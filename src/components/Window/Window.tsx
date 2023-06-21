@@ -5,8 +5,8 @@ import { AppData } from "@/types/app";
 import { PropsWithChildren } from "react";
 import { useRecoilState } from "recoil";
 
-const Window = ({ children }: PropsWithChildren) => {
-  const [app, setApp] = useRecoilState(appAtomFamily("chrome"));
+const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
+  const [app, setApp] = useRecoilState(appAtomFamily(id));
 
   const { isMaxSize, size, position } = app;
 
@@ -179,6 +179,7 @@ const Window = ({ children }: PropsWithChildren) => {
         className="absolute -left-1 w-2 h-full cursor-ew-resize z-20 select-none"
         onMouseDown={(event) => handleMouseDown(event, "left")}
       />
+      <Header id={id} />
       {children}
     </div>
   );
@@ -294,16 +295,14 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
           onClick={handleClickGreenButton}
         />
       </div>
-      <h1 className="self-center">{app.name}</h1>
+      <h1 className="self-center text-sm py-1">{app.name}</h1>
     </div>
   );
 };
 
 const Body = ({ children }: PropsWithChildren) => {
   return (
-    <div className="w-full h-full px-2 py-0.5 bg-white rounded-b-lg">
-      {children}
-    </div>
+    <div className="w-full h-full py-0.5 bg-white rounded-b-lg">{children}</div>
   );
 };
 
