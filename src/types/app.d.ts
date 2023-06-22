@@ -1,5 +1,5 @@
 export interface AppData {
-  id: "chrome";
+  id: "blog";
   name: string;
   iconUrl: string;
   content: JSX.Element;

@@ -1,11 +1,11 @@
-import Chrome from "@/components/App/Chrome";
+import Blog from "@/components/App/Blog";
 import { AppData } from "@/types/app";
 import { atom, atomFamily } from "recoil";
 
 const getName = (appId: AppData["id"]) => {
   switch (appId) {
-    case "chrome":
-      return "Google Chrome";
+    case "blog":
+      return "Blog.minjong";
     default:
       console.error(`${appId}는 올바르지 않은 appId 에요.`);
       return "";
@@ -14,8 +14,8 @@ const getName = (appId: AppData["id"]) => {
 
 const getContent = (appId: AppData["id"]) => {
   switch (appId) {
-    case "chrome":
-      return <Chrome />;
+    case "blog":
+      return <Blog />;
     default:
       console.error(`${appId}는 올바르지 않은 appId 에요.`);
       return <></>;
@@ -44,5 +44,5 @@ export const appAtomFamily = atomFamily<AppData, AppData["id"]>({
 
 export const appIdsAtom = atom<AppData["id"][]>({
   key: "appIdsAtom",
-  default: ["chrome"],
+  default: ["blog"],
 });
