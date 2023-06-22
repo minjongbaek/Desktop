@@ -32,11 +32,11 @@ export const appAtomFamily = atomFamily<AppData, AppData["id"]>({
     content: getContent(id),
     isMaxSize: false,
     size: {
-      width: 600,
-      height: 400,
+      width: 800,
+      height: 600,
     },
     position: {
-      x: 50,
+      x: 200,
       y: 50,
     },
   }),

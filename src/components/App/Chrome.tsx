@@ -1,20 +1,48 @@
 import { AppData } from "@/types/app";
 import Window from "../Window/Window";
-import { useRecoilValue } from "recoil";
-import { appAtomFamily } from "@/stores/app";
-import { PropsWithChildren, useRef } from "react";
+import { ComponentProps, FormEvent, MouseEvent, useRef } from "react";
 
 import LeftArrowIcon from "@public/icons/chrome/left-arrow.svg?react";
 import RightArrowIcon from "@public/icons/chrome/right-arrow.svg?react";
 import RefreshIcon from "@public/icons/chrome/refresh.svg?react";
 import HomeIcon from "@public/icons/chrome/home.svg?react";
+import { useRouter } from "next/navigation";
 
 const ID: AppData["id"] = "chrome";
 
 const Chrome = () => {
-  const app = useRecoilValue(appAtomFamily(ID));
+  // const app = useRecoilValue(appAtomFamily(ID));
   const urlInputRef = useRef<HTMLInputElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const router = useRouter();
+
+  const handleClickLeftButton = () => {
+    router.back();
+  };
+
+  const handleClickRightButton = () => {
+    router.forward();
+  };
+
+  const handleClickRefreshButton = () => {
+    if (!urlInputRef.current) return;
+    if (!iframeRef.current || !iframeRef.current.contentWindow) return;
+    router.refresh();
+  };
+
+  const handleClickHomeButton = () => {
+    if (!urlInputRef.current) return;
+    if (!iframeRef.current || !iframeRef.current.contentWindow) return;
+    urlInputRef.current.value = blogUrl;
+    iframeRef.current.contentWindow.location.href = blogUrl;
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!urlInputRef.current) return;
+    if (!iframeRef.current || !iframeRef.current.contentWindow) return;
+    iframeRef.current.contentWindow.location.href = urlInputRef.current.value;
+  };
 
   return (
     <Window id={ID}>
@@ -22,19 +50,19 @@ const Chrome = () => {
         <div className="flex flex-col h-full">
           <form
             className="flex text-sm px-1.5 py-0.5 gap-1.5"
-            onSubmit={(event) => event.preventDefault()}
+            onSubmit={(event) => handleSubmit(event)}
           >
             <div className="flex items-center gap-0.5">
-              <ChromeMenuButton>
+              <ChromeMenuButton onClick={handleClickLeftButton}>
                 <LeftArrowIcon className="w-3" />
               </ChromeMenuButton>
-              <ChromeMenuButton>
+              <ChromeMenuButton onClick={handleClickRightButton}>
                 <RightArrowIcon className="w-3" />
               </ChromeMenuButton>
-              <ChromeMenuButton>
+              <ChromeMenuButton onClick={handleClickRefreshButton}>
                 <RefreshIcon className="w-3" />
               </ChromeMenuButton>
-              <ChromeMenuButton>
+              <ChromeMenuButton onClick={handleClickHomeButton}>
                 <HomeIcon className="w-3" />
               </ChromeMenuButton>
             </div>
@@ -46,8 +74,8 @@ const Chrome = () => {
           </form>
           <iframe
             className="w-full h-full rounded-b-lg"
-            src={blogUrl}
             ref={iframeRef}
+            src={blogUrl}
           />
         </div>
       </Window.Body>
@@ -55,11 +83,22 @@ const Chrome = () => {
   );
 };
 
-const ChromeMenuButton = ({ children }: PropsWithChildren) => {
+const ChromeMenuButton = ({
+  children,
+  disabled,
+  type = "button",
+  onClick,
+}: ComponentProps<"button">) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    onClick && onClick(event);
+  };
   return (
     <button
-      type="button"
-      className="rounded-full hover:bg-gray-200 transition-colors duration-300 p-1.5"
+      type={type}
+      className="rounded-full hover:bg-gray-200 hover:disabled:bg-transparent transition-colors duration-300 p-1.5 disabled:stroke-gray-300 disabled:fill-gray-300"
+      onClick={handleClick}
+      disabled={disabled}
     >
       {children}
     </button>
