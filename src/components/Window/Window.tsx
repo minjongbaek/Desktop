@@ -34,6 +34,10 @@ const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
 
     windowElement.style.transitionProperty = "";
     windowElement.style.transitionDuration = "";
+    const windowBodyElement =
+      windowElement.getElementsByClassName("window-body")[0];
+    if (!(windowBodyElement instanceof HTMLDivElement)) return;
+    windowBodyElement.style.pointerEvents = "none";
 
     const handleMouseMove = (event: MouseEvent) => {
       const moveTop = () => {
@@ -125,8 +129,8 @@ const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
     };
 
     const handleMouseUp = (event: MouseEvent) => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
       const size = {
         width: windowElement.offsetWidth,
         height: windowElement.offsetHeight,
@@ -135,11 +139,12 @@ const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
         x: windowElement.offsetLeft,
         y: windowElement.offsetTop,
       };
+      windowBodyElement.style.pointerEvents = "auto";
       setApp({ ...app, size, position });
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
@@ -233,8 +238,8 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
     };
 
     const handleMouseUp = (event: MouseEvent) => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
 
       if (downEvent.detail === 2) {
         windowElement.style.transitionProperty = "top,left,width,height";
@@ -275,13 +280,13 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
       windowElement.style.transform = "";
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
     <div
-      className="relative header flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg select-none z-10"
+      className="window-header relative flex items-center justify-center px-4 py-1 bg-lightgrey/95 rounded-t-lg select-none z-10"
       onMouseDown={handleMouseDown}
     >
       <div className="absolute left-0 flex items-center gap-1.5 px-4 py-1">
@@ -302,7 +307,9 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
 
 const Body = ({ children }: PropsWithChildren) => {
   return (
-    <div className="w-full h-full py-0.5 bg-white rounded-b-lg">{children}</div>
+    <div className="window-body w-full h-full py-0.5 bg-white rounded-b-lg z-[9]">
+      {children}
+    </div>
   );
 };
 
