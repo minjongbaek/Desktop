@@ -1,6 +1,13 @@
 import { AppData } from "@/types/app";
 import Window from "../Window/Window";
-import { ComponentProps, FormEvent, MouseEvent, useRef } from "react";
+import {
+  ComponentProps,
+  FormEvent,
+  MouseEvent,
+  SyntheticEvent,
+  useEffect,
+  useRef,
+} from "react";
 
 import LeftArrowIcon from "@public/icons/chrome/left-arrow.svg?react";
 import RightArrowIcon from "@public/icons/chrome/right-arrow.svg?react";
@@ -8,9 +15,9 @@ import RefreshIcon from "@public/icons/chrome/refresh.svg?react";
 import HomeIcon from "@public/icons/chrome/home.svg?react";
 import { useRouter } from "next/navigation";
 
-const ID: AppData["id"] = "chrome";
+const ID: AppData["id"] = "blog";
 
-const Chrome = () => {
+const Blog = () => {
   // const app = useRecoilValue(appAtomFamily(ID));
   const urlInputRef = useRef<HTMLInputElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -105,6 +112,6 @@ const ChromeMenuButton = ({
   );
 };
 
-export default Chrome;
+export default Blog;
 
 const blogUrl = "https://blog.minjong.codes";
