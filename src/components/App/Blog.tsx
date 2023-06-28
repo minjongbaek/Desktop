@@ -1,13 +1,6 @@
 import { AppData } from "@/types/app";
 import Window from "../Window/Window";
-import {
-  ComponentProps,
-  FormEvent,
-  MouseEvent,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-} from "react";
+import { ComponentProps, FormEvent, MouseEvent, useRef } from "react";
 
 import LeftArrowIcon from "@public/icons/chrome/left-arrow.svg?react";
 import RightArrowIcon from "@public/icons/chrome/right-arrow.svg?react";
@@ -18,7 +11,6 @@ import { useRouter } from "next/navigation";
 const ID: AppData["id"] = "blog";
 
 const Blog = () => {
-  // const app = useRecoilValue(appAtomFamily(ID));
   const urlInputRef = useRef<HTMLInputElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
