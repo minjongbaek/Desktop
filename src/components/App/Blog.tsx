@@ -1,13 +1,6 @@
 import { AppData } from "@/types/app";
 import Window from "../Window/Window";
-import {
-  ComponentProps,
-  FormEvent,
-  MouseEvent,
-  SyntheticEvent,
-  useEffect,
-  useRef,
-} from "react";
+import { ComponentProps, FormEvent, MouseEvent, useRef } from "react";
 
 import LeftArrowIcon from "@public/icons/chrome/left-arrow.svg?react";
 import RightArrowIcon from "@public/icons/chrome/right-arrow.svg?react";
@@ -18,7 +11,6 @@ import { useRouter } from "next/navigation";
 const ID: AppData["id"] = "blog";
 
 const Blog = () => {
-  // const app = useRecoilValue(appAtomFamily(ID));
   const urlInputRef = useRef<HTMLInputElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const router = useRouter();
@@ -56,7 +48,7 @@ const Blog = () => {
       <Window.Body>
         <div className="flex flex-col h-full">
           <form
-            className="flex text-sm px-1.5 py-0.5 gap-1.5"
+            className="flex text-sm px-1.5 py-1 gap-1.5"
             onSubmit={(event) => handleSubmit(event)}
           >
             <div className="flex items-center gap-0.5">

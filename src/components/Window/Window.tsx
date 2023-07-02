@@ -307,7 +307,7 @@ const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
 
 const Body = ({ children }: PropsWithChildren) => {
   return (
-    <div className="window-body w-full h-full py-0.5 bg-white rounded-b-lg z-[9]">
+    <div className="window-body w-full h-full bg-white rounded-b-lg z-[9]">
       {children}
     </div>
   );

@@ -1,13 +1,11 @@
 "use client";
 
-import { useRecoilValue } from "recoil";
 import DockItem from "./DockItem";
 import { useState } from "react";
-import { appIdsAtom } from "@/stores/app";
+import { appIds } from "@/utils/constants/app";
 
 const Dock = () => {
   const [mouseX, setMouseX] = useState<number | null>(null);
-  const appIds = useRecoilValue(appIdsAtom);
 
   return (
     <footer className="w-full z-20">
