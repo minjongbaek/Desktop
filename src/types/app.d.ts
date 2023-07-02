@@ -1,5 +1,5 @@
 export interface AppData {
-  id: "blog";
+  id: "blog" | "photo-booth";
   name: string;
   iconUrl: string;
   content: JSX.Element;

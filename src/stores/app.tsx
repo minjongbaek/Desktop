@@ -1,4 +1,5 @@
 import Blog from "@/components/App/Blog";
+import PhotoBooth from "@/components/App/PhotoBooth";
 import { AppData } from "@/types/app";
 import { atom, atomFamily } from "recoil";
 
@@ -6,6 +7,8 @@ const getName = (appId: AppData["id"]) => {
   switch (appId) {
     case "blog":
       return "Blog.minjong";
+    case "photo-booth":
+      return "Photo Booth";
     default:
       console.error(`${appId}는 올바르지 않은 appId 에요.`);
       return "";
@@ -16,6 +19,8 @@ const getContent = (appId: AppData["id"]) => {
   switch (appId) {
     case "blog":
       return <Blog />;
+    case "photo-booth":
+      return <PhotoBooth />;
     default:
       console.error(`${appId}는 올바르지 않은 appId 에요.`);
       return <></>;
@@ -40,9 +45,4 @@ export const appAtomFamily = atomFamily<AppData, AppData["id"]>({
       y: 50,
     },
   }),
-});
-
-export const appIdsAtom = atom<AppData["id"][]>({
-  key: "appIdsAtom",
-  default: ["blog"],
 });
