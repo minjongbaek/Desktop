@@ -1,12 +1,11 @@
 "use client";
 
-import { appAtomFamily, appIdsAtom } from "@/stores/app";
+import { appAtomFamily } from "@/stores/app";
 import { AppData } from "@/types/app";
+import { appIds } from "@/utils/constants/app";
 import { useRecoilValue } from "recoil";
 
 export default function Home() {
-  const appIds = useRecoilValue(appIdsAtom);
-
   return (
     <main
       id="main"
