@@ -2,9 +2,21 @@
 
 import DockItem from "./DockItem";
 import { useState } from "react";
-import { appIds } from "@/utils/constants/app";
+import { appsAtom } from "@/stores/app";
+import { useRecoilState } from "recoil";
 
 const Dock = () => {
+  const [apps, setApps] = useRecoilState(appsAtom);
+
+  const handleClickDockItem = (id: string) => {
+    const copiedApps = [...apps].map((app) => ({
+      ...app,
+      active: app.id === id ? !app.active : app.active,
+      focus: app.id === id ? true : false,
+    }));
+    setApps(copiedApps);
+  };
+
   const [mouseX, setMouseX] = useState<number | null>(null);
 
   return (
@@ -15,8 +27,13 @@ const Dock = () => {
           onMouseMove={(event) => setMouseX(event.clientX)}
           onMouseLeave={() => setMouseX(null)}
         >
-          {appIds.map((id) => (
-            <DockItem key={id} id={id} mouseX={mouseX} />
+          {apps.map((app) => (
+            <DockItem
+              key={app.id}
+              mouseX={mouseX}
+              onClick={() => handleClickDockItem(app.id)}
+              {...app}
+            />
           ))}
         </ul>
       </nav>

@@ -1,11 +1,9 @@
 "use client";
 
-import { appAtomFamily } from "@/stores/app";
 import { AppData } from "@/types/app";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import { RefObject, useRef } from "react";
-import { useRecoilState } from "recoil";
 
 const DEFAULT_SIZE = 64;
 const MAGNIFICATION_MAX = 1.8;
@@ -47,27 +45,29 @@ const useCalculateSize = (
   return calculateSize;
 };
 
-interface DockItemProps {
+interface DockItemProps
+  extends Pick<AppData, "id" | "name" | "iconUrl" | "active"> {
   mouseX: number | null;
+  onClick: () => void;
 }
 
-const DockItem = ({ id, mouseX }: Pick<AppData, "id"> & DockItemProps) => {
+const DockItem = ({
+  name,
+  iconUrl,
+  active,
+  onClick,
+  mouseX,
+}: DockItemProps) => {
   const imageWrapRef = useRef<HTMLDivElement>(null);
   const calculateSize = useCalculateSize(imageWrapRef, mouseX);
-
-  const [app, setApp] = useRecoilState(appAtomFamily(id));
-
-  const handleClickDockItem = () => {
-    setApp({ ...app, active: !app.active });
-  };
 
   return (
     <li
       className="group p-0.5 pb-1.5 flex flex-col items-center"
-      onClick={handleClickDockItem}
+      onClick={onClick}
     >
       <div className="group-hover:block hidden absolute w-max mt-[-2.5rem] px-4 py-0.5 text-sm bg-lightgrey/90 rounded shadow-2xl after:content-[''] after:border-t-[0.5rem] after:border-x-[0.5rem] after:border-transparent after:border-t-lightgrey/90 after:absolute after:bottom-[-0.5rem] after:left-[50%] after:translate-x-[-50%] after:h-0">
-        {app.name}
+        {name}
       </div>
       <motion.div
         ref={imageWrapRef}
@@ -78,8 +78,8 @@ const DockItem = ({ id, mouseX }: Pick<AppData, "id"> & DockItemProps) => {
         }}
       >
         <Image
-          src={app.iconUrl}
-          alt={app.name}
+          src={iconUrl}
+          alt={name}
           fill
           sizes="128px"
           quality={75}
@@ -87,7 +87,7 @@ const DockItem = ({ id, mouseX }: Pick<AppData, "id"> & DockItemProps) => {
         />
       </motion.div>
 
-      {app.active && (
+      {active && (
         <div className="absolute bottom-[0.15rem] rounded-full w-1 h-1 bg-slate-700/90" />
       )}
     </li>

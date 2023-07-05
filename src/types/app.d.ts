@@ -13,4 +13,5 @@ export interface AppData {
     x: number;
     y: number;
   };
+  focus: boolean;
 }
