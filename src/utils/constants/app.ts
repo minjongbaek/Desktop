@@ -1,3 +1,3 @@
 import { AppData } from "@/types/app";
 
-export const appIds: AppData["id"][] = ["blog", "photo-booth"];
+export const DEFAULT_APP_IDS: AppData["id"][] = ["blog", "photo-booth"];

@@ -1,12 +1,26 @@
 "use client";
 
-import { appAtomFamily } from "@/stores/app";
+import { appState, appsAtom } from "@/stores/app";
 import { AppData } from "@/types/app";
 import { PropsWithChildren } from "react";
-import { useRecoilState } from "recoil";
+import {
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 
-const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
-  const [app, setApp] = useRecoilState(appAtomFamily(id));
+interface WindowProps {
+  id: AppData["id"];
+  lockSize?: boolean;
+}
+
+const Window = ({
+  id,
+  lockSize = false,
+  children,
+}: WindowProps & PropsWithChildren) => {
+  const [app, setApp] = useRecoilState(appState(id));
 
   const { isMaxSize, size, position } = app;
 
@@ -147,51 +161,75 @@ const Window = ({ id, children }: Pick<AppData, "id"> & PropsWithChildren) => {
     window.addEventListener("mouseup", handleMouseUp);
   };
 
+  const zIndex = app.focus ? `z-[11]` : `z-10`;
+
+  const handleFocus = useRecoilCallback(
+    ({ set }) =>
+      () => {
+        set(appsAtom, (apps) => {
+          return apps.map((app) => ({
+            ...app,
+            focus: app.id === id ? true : false,
+          }));
+        });
+      },
+    []
+  );
+
   return (
     <div
-      className="window absolute flex rounded-lg flex-col z-10"
+      className={`window absolute flex rounded-lg flex-col ${zIndex}`}
       style={{ ...sizeStyle, ...positionStyle }}
+      onMouseDownCapture={handleFocus}
+      tabIndex={-1}
     >
-      <div
-        className="absolute -top-0.5 -left-0.5 w-2.5 h-2.5 cursor-nwse-resize z-30 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "top-left")}
-      />
-      <div
-        className="absolute -top-1 w-full h-2 cursor-ns-resize z-20 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "top")}
-      />
-      <div
-        className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 cursor-nesw-resize z-30 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "top-right")}
-      />
-      <div
-        className="absolute -right-1 w-2 h-full cursor-ew-resize z-20 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "right")}
-      />
-      <div
-        className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 cursor-nwse-resize z-30 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "bottom-right")}
-      />
-      <div
-        className="absolute -bottom-1 w-full h-2 cursor-ns-resize z-20 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "bottom")}
-      />
-      <div
-        className="absolute -bottom-0.5 -left-0.5 w-2.5 h-2.5 cursor-nesw-resize z-30 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "bottom-left")}
-      />
-      <div
-        className="absolute -left-1 w-2 h-full cursor-ew-resize z-20 select-none"
-        onMouseDown={(event) => handleMouseDown(event, "left")}
-      />
+      {!lockSize && (
+        <>
+          <div
+            className="absolute -top-0.5 -left-0.5 w-2.5 h-2.5 cursor-nwse-resize z-30 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "top-left")}
+          />
+          <div
+            className="absolute -top-1 w-full h-2 cursor-ns-resize z-20 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "top")}
+          />
+          <div
+            className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 cursor-nesw-resize z-30 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "top-right")}
+          />
+          <div
+            className="absolute -right-1 w-2 h-full cursor-ew-resize z-20 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "right")}
+          />
+          <div
+            className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 cursor-nwse-resize z-30 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "bottom-right")}
+          />
+          <div
+            className="absolute -bottom-1 w-full h-2 cursor-ns-resize z-20 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "bottom")}
+          />
+          <div
+            className="absolute -bottom-0.5 -left-0.5 w-2.5 h-2.5 cursor-nesw-resize z-30 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "bottom-left")}
+          />
+          <div
+            className="absolute -left-1 w-2 h-full cursor-ew-resize z-20 select-none"
+            onMouseDown={(event) => handleMouseDown(event, "left")}
+          />
+        </>
+      )}
       <Header id={id} />
+      {!app.focus && (
+        <div className={`absolute w-full h-full opacity-0 ${zIndex}`} />
+      )}
       {children}
     </div>
   );
 };
 
 const Header = ({ id }: Pick<AppData, "id"> & PropsWithChildren) => {
-  const [app, setApp] = useRecoilState(appAtomFamily(id));
+  const [app, setApp] = useRecoilState(appState(id));
 
   const handleClickRedButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     setApp({ ...app, active: !app.active });

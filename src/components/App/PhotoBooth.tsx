@@ -16,14 +16,12 @@ const PhotoBooth = () => {
   }, []);
 
   return (
-    <Window id={ID}>
+    <Window id={ID} lockSize>
       <Window.Body>
-        <div className="rounded-b-lg">
-          <video
-            ref={videoRef}
-            className="w-full h-full rotate-y-180 rounded-b-lg"
-          />
-        </div>
+        <video
+          ref={videoRef}
+          className="w-full rotate-y-180 rounded-b-lg object-contain"
+        />
       </Window.Body>
     </Window>
   );
